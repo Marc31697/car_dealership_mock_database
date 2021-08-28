@@ -1,0 +1,225 @@
+-- Customer Inserts
+SELECT * FROM customer;
+
+CREATE OR REPLACE PROCEDURE addCustomer(
+	customer_ INTEGER,
+	first_ VARCHAR,
+	last_ VARCHAR,
+	add_ VARCHAR,
+	billing_ VARCHAR,
+	email_ VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO customer VALUES(
+		customer_,
+		first_,
+		last_,
+		add_,
+		billing_,
+		email_
+);
+	COMMIT;
+	
+END;
+$$
+
+CALL addCustomer(2,'Sam','Stallion','1952 Rock Ave, Little Rock, AR','5284-3732-1189-0350 582 03/24', 'stallionsam@gmail.com');
+CALL addCustomer(3,'Gerard','Way','9116 Walt Whitman Dr. Thibodaux, LA 70301','5484-7459-9458-4203 555 01/27', 'waywardG@gmail.com');
+CALL addCustomer(4,'Billy','Loomis','99 Prescott Ln, Woodsboro, CA','5559-5485-3932-5136 495 08/25', 'gface@yahoo.com');
+
+
+-- Staff Inserts
+SELECT * FROM staff;
+
+CREATE OR REPLACE PROCEDURE addStaff(
+	staff_ INTEGER,
+	first_ VARCHAR,
+	last_ VARCHAR,
+	add_ VARCHAR,
+	email_ VARCHAR,
+	phone_ VARCHAR,
+	department_ VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO staff VALUES(
+		staff_,
+		first_,
+		last_,
+		add_,
+		email_,
+		phone_,
+		department_
+);
+	COMMIT;
+	
+END;
+$$
+
+CALL addStaff(1, 'Shay','ONeill','332 Rose St, Voorhees, NJ 08043','sloneill@gmail.com','609-337-8624','Sales');
+CALL addStaff(2, 'Jim','Halpert','1122 Monroe Ave, Scranton, PA 18509','jimbo@gmail.com','908-642-7910','Sales');
+CALL addStaff(3, 'Alyssa','Schmidt','260 Summer Avenue Winter Haven, FL 33880','shmisch@hotmail.com','609-338-8654','Maintenance');
+CALL addStaff(4, 'Bugs','Bunny','502 Longbranch Road Atlantic City, NJ 08401','watupdoc@gmail.com','908-837-9424','Maintenance');
+
+-- Vehicle Inserts
+SELECT * FROM vehicle;
+
+CREATE OR REPLACE PROCEDURE addVehicle(
+	vehicle_ INTEGER,
+	make_ VARCHAR,
+	model_ VARCHAR,
+	year_ NUMERIC(10),
+	cost_ NUMERIC(8,2),
+	saserv_ VARCHAR,
+	neused_ VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO vehicle VALUES(
+		vehicle_,
+		make_,
+		model_,
+		year_,
+		cost_,
+		saserv_,
+		neused_
+);
+	COMMIT;
+	
+END;
+$$
+
+CALL addVehicle(1, 'Audi', 'A4', 2010, 12000.00, 'Sale', 'Used');
+CALL addVehicle(2, 'Mazda', 'Cx7', 2021, 35000.00, 'Sale', 'New');
+CALL addVehicle(3, 'Volvo', 'S40', 2004, 0.00, 'Service', 'N/A');
+CALL addVehicle(4, 'Ford', 'Fusion', 2017, 0.00, 'Service', 'N/A');
+
+-- sales_invoice Inserts
+SELECT * FROM sales_invoice;
+
+CREATE OR REPLACE PROCEDURE newSale(
+	invoice_ INTEGER,
+	sales_d VARCHAR,
+	sales_c NUMERIC(10,2),
+	date_ DATE,
+	custom_ INTEGER,
+	vehicle_ INTEGER,
+	staff_ INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO sales_invoice VALUES(
+		invoice_,
+		sales_d,
+		sales_c,
+		date_,
+		custom_,
+		vehicle_,
+		staff_
+);
+	COMMIT;
+	
+END;
+$$
+DROP PROCEDURE newSale;
+CALL newSale(1,'New Mazda Purchase',34000.00,CURRENT_DATE,2,2,1);
+CALL newSale(2,'Used Audi Purchase',11500.00,CURRENT_DATE,4,1,2);
+
+-- service_invoice Inserts
+SELECT * FROM service_invoice;
+
+CREATE OR REPLACE PROCEDURE serviceVehicle(
+	service_ INTEGER,
+	cost_ NUMERIC(10,2),
+	date_ DATE,
+	custom_ INTEGER,
+	vehicle_ INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO service_invoice VALUES(
+		service_,
+		cost_,
+		date_,
+		custom_,
+		vehicle_
+);
+	COMMIT;
+	
+END;
+$$
+
+CALL serviceVehicle(1,4000.00,CURRENT_DATE,3,3);
+CALL serviceVehicle(2,15.00,CURRENT_DATE,1,4);
+
+-- service_type Inserts
+SELECT * FROM service_type
+
+-- Realized I needed to add two more column to my table for parts
+ALTER TABLE service_type
+ADD part_used VARCHAR;
+
+UPDATE service_type
+SET part_used = 'Engine'
+WHERE type_id = 1;
+
+CREATE OR REPLACE PROCEDURE serviceType(
+	type_ INTEGER,
+	service_ VARCHAR,
+	cost_ NUMERIC(10,2),
+	staff_ INTEGER,
+	part_ VARCHAR,
+	part_i INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO service_type VALUES(
+		type_,
+		service_,
+		cost_,
+		staff_,
+		part_,
+		part_i
+);
+	COMMIT;
+	
+END;
+$$
+
+DROP PROCEDURE serviceType;
+CALL serviceType(1,'Engine Replacement',4000.00, 3,'Engine',1);
+CALL serviceType(2,'Tire Patch',15.00,4,'Tire Patch Kit',2);
+
+-- parts Inserts
+SELECT * FROM parts;
+
+CREATE OR REPLACE PROCEDURE addParts(
+	part_ INTEGER,
+	desc_ VARCHAR,
+	cost_ NUMERIC(10,2),
+	stock_ BOOLEAN
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO parts VALUES(
+		part_,
+		desc_,
+		cost_,
+		stock_
+);
+	COMMIT;
+	
+END;
+$$
+
+
+CALL addParts(1,'Engine',3400.00,TRUE);
+CALL addParts(2,'Tire Patch Kit',15.00,TRUE);
